@@ -1,10 +1,48 @@
-<h1>{{ question.text }}</h1>
-<form method="post">
-    {% csrf_token %}
-    {% for choice in question.choices.all %}
-    <label>
-        <input type="radio" name="choice" value="{{ choice.id }}"> {{ choice.text }}
-    </label><br>
-    {% endfor %}
-    <button type="submit">Avanti</button>
-</form>
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="{% static 'quiz/css/style.css' %}">
+</head>
+
+<body>
+    <div class="question-box">
+        <h2>{{ question.text }}</h2>
+
+        <form method="post" id="quiz-form">
+            {% csrf_token %}
+            {% for choice in question.choices.all %}
+            <label>
+                <input type="radio" name="choice" value="{{ choice.id }}">
+                {{ choice.text }}
+            </label><br>
+            {% empty %}
+            <p>Nessuna risposta disponibile.</p>
+            {% endfor %}
+            <button type="submit">Invia risposta</button>
+        </form>
+
+        <div id="timer">Tempo rimasto: <span id="time">10</span> secondi</div>
+    </div>
+
+    <script>
+        let timeLeft = 10;
+        const timerDisplay = document.getElementById("time");
+
+        const timer = setInterval(function () {
+            timeLeft--;
+            timerDisplay.textContent = timeLeft;
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                document.getElementById("quiz-form").submit();
+            }
+        }, 1000);
+    </script>
+</body>
+
+</html>
